@@ -2,6 +2,28 @@
 import pyinotify as pin
 
 def run_watch_files(proc, path):
+    '''
+    Run the command (callable) ``proc`` and track watched files under the
+    directory ``path``.
+    
+    Parameters:
+        - proc: A callable. It will be called.
+        - path: A string, the directory to monitor.
+    
+    Returns:
+        result, accesses:
+            - result: the return from ``proc()``.
+            - accesses: A ``RecordHandler`` object containg information
+              about file accesses.
+    
+    The fields of ``accesses`` are:
+        - created
+        - deleted
+        - accessed
+        - modified
+    
+    which are sets of strings.
+    '''
     watcher = pin.WatchManager()
     
     handler = RecorderHandler()
@@ -19,6 +41,16 @@ def run_watch_files(proc, path):
     return result, handler
     
 class RecorderHandler(pin.ProcessEvent):
+    '''
+    Holds lists of files access during the operation. These are
+    stored in four fields (all sets):
+        - created
+        - deleted
+        - accessed
+        - modified
+    
+    which hold path names (usually absolute -- don't count on it).
+    '''
     
     def __init__(self):
         self.created  = set()
