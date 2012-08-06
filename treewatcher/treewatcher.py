@@ -2,13 +2,17 @@
 import pyinotify as pin
 
 def run_watch_files(proc, path):
+    '''alias for run_watching_files(proc, [path])'''
+    return run_watching_files(proc, [path])
+
+def run_watching_files(proc, paths):
     '''
     Run the command (callable) ``proc`` and track watched files under the
-    directory ``path``.
+    directories ``paths``.
     
     Parameters:
-        - proc: A callable. It will be called.
-        - path: A string, the directory to monitor.
+        - proc:  A callable. It will be called.
+        - paths: A list of strings, the directories to monitor.
     
     Returns:
         result, accesses:
@@ -28,8 +32,9 @@ def run_watch_files(proc, path):
     
     handler = RecorderHandler()
     notifier = pin.Notifier(watcher, handler, timeout=1)
-    watcher.add_watch(path, handler.ev_mask,
-        rec=True, quiet=False, auto_add=True)
+    for _ in set(paths):
+        watcher.add_watch(_, handler.ev_mask,
+            rec=True, quiet=False, auto_add=True)
     
     result = proc()
     
