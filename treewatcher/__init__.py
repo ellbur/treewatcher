@@ -1,3 +1,3 @@
 
-from treewatcher import *
+from .treewatcher import *
 
